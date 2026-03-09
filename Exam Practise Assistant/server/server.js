@@ -131,6 +131,9 @@
 //   console.log("Backend running on http://localhost:5000")
 // );
 
+
+
+
 // import express from "express";
 // import Groq from "groq-sdk";
 // import cors from "cors";
@@ -143,17 +146,20 @@
 // app.use(express.json());
 
 // const groq = new Groq({
-//   apiKey: process.env.VITE_GROQ_API_KEY
+//   apiKey: process.env.GROQ_API_KEY   // ✅ FIXED
 // });
 
 // app.post("/api/generate", async (req, res) => {
 //   const { prompt } = req.body;
 
-//   if (!prompt) return res.status(400).json({ error: "Missing prompt" });
+//   if (!prompt) {
+//     return res.status(400).json({ error: "Missing prompt" });
+//   }
 
 //   try {
 //     const response = await groq.chat.completions.create({
-//       model: "openai/gpt-oss-20b",   // <- model available on your account
+//       // model: "openai/gpt-oss-20b",  
+//         model: "llama3-8b-8192", 
 //       temperature: 0.7,
 //       messages: [{ role: "user", content: prompt }]
 //     });
@@ -163,13 +169,16 @@
 //     });
 
 //   } catch (error) {
-//     console.error("Groq API Error:", error);
-//     res.status(500).json({ error: "Groq API failed", details: error });
+//     console.error(error);
+//     res.status(500).json({ error: "Groq API failed" });
 //   }
 // });
 
-// app.listen(5000, () => console.log("Backend running on http://localhost:5000"));
+// const PORT = process.env.PORT || 5000;   // ✅ IMPORTANT
 
+// app.listen(PORT, () => {
+//   console.log("Server running on port", PORT);
+// });
 
 import express from "express";
 import Groq from "groq-sdk";
@@ -179,39 +188,51 @@ import dotenv from "dotenv";
 dotenv.config();
 
 const app = express();
+
 app.use(cors());
 app.use(express.json());
 
+console.log("KEY:", process.env.GROQ_API_KEY);
+
 const groq = new Groq({
-  apiKey: process.env.GROQ_API_KEY   // ✅ FIXED
+  apiKey: process.env.GROQ_API_KEY,
 });
 
 app.post("/api/generate", async (req, res) => {
-  const { prompt } = req.body;
-
-  if (!prompt) {
-    return res.status(400).json({ error: "Missing prompt" });
-  }
-
   try {
-    const response = await groq.chat.completions.create({
-      // model: "openai/gpt-oss-20b",  
-        model: "llama3-8b-8192", 
-      temperature: 0.7,
-      messages: [{ role: "user", content: prompt }]
+    console.log("Request received");
+
+    const { prompt } = req.body;
+
+    if (!prompt) {
+      return res.status(400).json({ error: "Prompt missing" });
+    }
+
+    const chat = await groq.chat.completions.create({
+      model: "llama3-8b-8192",
+      messages: [
+        {
+          role: "user",
+          content: prompt,
+        },
+      ],
     });
+
+    console.log("Groq response ok");
 
     res.json({
-      message: response.choices[0].message.content
+      message: chat.choices[0].message.content,
     });
 
-  } catch (error) {
-    console.error(error);
-    res.status(500).json({ error: "Groq API failed" });
+  } catch (err) {
+    console.log("ERROR:", err);
+    res.status(500).json({
+      error: err.message,
+    });
   }
 });
 
-const PORT = process.env.PORT || 5000;   // ✅ IMPORTANT
+const PORT = process.env.PORT || 5000;
 
 app.listen(PORT, () => {
   console.log("Server running on port", PORT);
