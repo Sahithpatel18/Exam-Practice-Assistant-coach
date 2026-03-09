@@ -210,7 +210,7 @@ app.post("/api/generate", async (req, res) => {
 
     const response = await groq.chat.completions.create({
       model: "llama-3.1-8b-instant",   // ✅ working model
-      temperature: 0,
+      temperature: 0.8,
       messages: [
         {
           role: "system",
