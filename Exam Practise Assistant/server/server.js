@@ -195,7 +195,8 @@ app.post("/api/generate", async (req, res) => {
 
   try {
     const response = await groq.chat.completions.create({
-      model: "openai/gpt-oss-20b",
+      // model: "openai/gpt-oss-20b",  
+        model: "llama3-8b-8192", 
       temperature: 0.7,
       messages: [{ role: "user", content: prompt }]
     });
