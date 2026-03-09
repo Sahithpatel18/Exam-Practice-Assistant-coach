@@ -208,15 +208,20 @@ app.post("/api/generate", async (req, res) => {
       return res.status(400).json({ error: "Prompt missing" });
     }
 
-    const chat = await groq.chat.completions.create({
-      model: "llama3-8b-8192",
-      messages: [
-        {
-          role: "user",
-          content: prompt,
-        },
-      ],
-    });
+    const response = await groq.chat.completions.create({
+  model: "llama3-8b-8192",
+  temperature: 0,
+  messages: [
+    {
+      role: "system",
+      content: "Return only valid JSON."
+    },
+    {
+      role: "user",
+      content: prompt
+    }
+  ]
+});
 
     console.log("Groq response ok");
 
