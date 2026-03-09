@@ -209,28 +209,29 @@ app.post("/api/generate", async (req, res) => {
     }
 
     const response = await groq.chat.completions.create({
-  model: "llama3-8b-8192",
-  temperature: 0,
-  messages: [
-    {
-      role: "system",
-      content: "Return only valid JSON."
-    },
-    {
-      role: "user",
-      content: prompt
-    }
-  ]
-});
+      model: "llama-3.1-8b-instant",   // ✅ working model
+      temperature: 0,
+      messages: [
+        {
+          role: "system",
+          content: "Return only valid JSON. No explanation."
+        },
+        {
+          role: "user",
+          content: prompt
+        }
+      ]
+    });
 
     console.log("Groq response ok");
 
     res.json({
-      message: chat.choices[0].message.content,
+      message: response.choices[0].message.content,
     });
 
   } catch (err) {
     console.log("ERROR:", err);
+
     res.status(500).json({
       error: err.message,
     });
