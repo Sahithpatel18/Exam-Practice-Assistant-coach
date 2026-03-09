@@ -523,7 +523,7 @@ Return ONLY valid JSON in this format:
 }
 `;
 
-        const response = await fetch("http://localhost:5000/api/generate", {
+        const response = await fetch("https://exam-practice-assistant-coach-backend.onrender.com/api/generate", {
           method: "POST",
           headers: { "Content-Type": "application/json" },
           body: JSON.stringify({ prompt }),
@@ -600,7 +600,7 @@ Return ONLY valid JSON in this format:
 }
 `;
 
-      const response = await fetch("http://localhost:5000/api/generate", {
+      const response = await fetch("https://exam-practice-assistant-coach-backend.onrender.com/api/generate", {
         method: "POST",
         headers: { "Content-Type": "application/json" },
         body: JSON.stringify({ prompt }),
