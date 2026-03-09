@@ -489,36 +489,78 @@ export async function generateQuestions(settings: QuizSettings): Promise<Questio
   }
 
   // ⭐ FIXED PROMPT — ensures correctAnswer is RANDOM, NOT always A
-  const prompt = `
-Generate exactly ${questionCount} "${questionType}" questions for:
+//   const prompt = `
+// Generate exactly ${questionCount} "${questionType}" questions for:
+
+// ${promptSubject}
+// Difficulty: ${difficulty}
+// ${contextInstruction}
+
+// STRICT RULES:
+// 1. Output ONLY valid JSON array. No text outside JSON.
+// 2. For multiple-choice:
+//    - Must return EXACTLY 4 options.
+//    - Options MUST be UNIQUE.
+//    - correctAnswer MUST be one of the options.
+//    - correctAnswer MUST NOT always be the first option.
+//    - Randomize correct option position.
+// 3. For true/false:
+//    - correctAnswer must be "true" or "false".
+// 4. For fill-blank:
+//    - question must contain ONE blank like "______".
+//    - correctAnswer must be the missing word.
+// 5. For short-answer:
+//    - correctAnswer must be 2–3 sentences.
+
+// RETURN ONLY JSON LIKE:
+// [
+//   {
+//     "question": "text",
+//     "options": ["A", "B", "C", "D"],
+//     "correctAnswer": "B",
+//     "explanation": "reason"
+//   }
+// ]
+// `;
+
+const prompt = `
+Generate exactly ${questionCount} ${questionType} questions.
 
 ${promptSubject}
 Difficulty: ${difficulty}
 ${contextInstruction}
 
 STRICT RULES:
-1. Output ONLY valid JSON array. No text outside JSON.
-2. For multiple-choice:
-   - Must return EXACTLY 4 options.
-   - Options MUST be UNIQUE.
-   - correctAnswer MUST be one of the options.
-   - correctAnswer MUST NOT always be the first option.
-   - Randomize correct option position.
-3. For true/false:
-   - correctAnswer must be "true" or "false".
-4. For fill-blank:
-   - question must contain ONE blank like "______".
-   - correctAnswer must be the missing word.
-5. For short-answer:
-   - correctAnswer must be 2–3 sentences.
 
-RETURN ONLY JSON LIKE:
+- Return ONLY JSON array
+- No text outside JSON
+- Questions must match subject and difficulty
+
+Multiple choice rules:
+- Exactly 4 options
+- Options must be meaningful
+- Options must change based on question
+- Do NOT use A B C D
+- Do NOT use Option1 Option2
+- correctAnswer must be one of options
+
+True/False rules:
+- correctAnswer must be true or false
+
+Fill blank rules:
+- Use ______
+
+Short answer rules:
+- 2–3 sentence answer
+
+FORMAT:
+
 [
   {
-    "question": "text",
-    "options": ["A", "B", "C", "D"],
-    "correctAnswer": "B",
-    "explanation": "reason"
+    "question": "<question>",
+    "options": ["<opt1>", "<opt2>", "<opt3>", "<opt4>"],
+    "correctAnswer": "<one of options>",
+    "explanation": "<reason>"
   }
 ]
 `;
