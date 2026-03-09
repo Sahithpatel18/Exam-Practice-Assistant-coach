@@ -523,43 +523,84 @@ export async function generateQuestions(settings: QuizSettings): Promise<Questio
 // ]
 // `;
 
-const prompt = `
-Generate exactly ${questionCount} ${questionType} questions.
+// const prompt = `
+// Generate exactly ${questionCount} ${questionType} questions.
 
-${promptSubject}
+// ${promptSubject}
+// Difficulty: ${difficulty}
+// ${contextInstruction}
+
+// STRICT RULES:
+
+// - Return ONLY JSON array
+// - No text outside JSON
+// - Questions must match subject and difficulty
+
+// Multiple choice rules:
+// - Exactly 4 options
+// - Options must be meaningful
+// - Options must change based on question
+// - Do NOT use A B C D
+// - Do NOT use Option1 Option2
+// - correctAnswer must be one of options
+
+// True/False rules:
+// - correctAnswer must be true or false
+
+// Fill blank rules:
+// - Use ______
+
+// Short answer rules:
+// - 2–3 sentence answer
+
+// FORMAT:
+
+// [
+//   {
+//     "question": "<question>",
+//     "options": ["<opt1>", "<opt2>", "<opt3>", "<opt4>"],
+//     "correctAnswer": "<one of options>",
+//     "explanation": "<reason>"
+//   }
+// ]
+// `;
+const prompt = `
+Generate exactly ${questionCount} questions.
+
+Subject: ${subject}
 Difficulty: ${difficulty}
-${contextInstruction}
+Question type: ${questionType}
 
 STRICT RULES:
 
-- Return ONLY JSON array
-- No text outside JSON
-- Questions must match subject and difficulty
-
-Multiple choice rules:
-- Exactly 4 options
+If question type = multiple-choice:
+- Must return 4 options
 - Options must be meaningful
-- Options must change based on question
-- Do NOT use A B C D
-- Do NOT use Option1 Option2
-- correctAnswer must be one of options
+- Do NOT return true/false
+- Do NOT return A B C D only
+- correctAnswer must match one option
 
-True/False rules:
+If question type = true-false:
+- Only 2 options: true, false
 - correctAnswer must be true or false
 
-Fill blank rules:
-- Use ______
+If question type = fill-blank:
+- Use ______ in question
+- correctAnswer must be word
 
-Short answer rules:
-- 2–3 sentence answer
+If question type = short-answer:
+- No options
+- correctAnswer must be sentence
+
+Return ONLY JSON
 
 FORMAT:
 
 [
   {
-    "question": "<question>",
+    "question": "<text>",
     "options": ["<opt1>", "<opt2>", "<opt3>", "<opt4>"],
-    "correctAnswer": "<one of options>",
+    "correctAnswer": "<one option>",
     "explanation": "<reason>"
   }
 ]
